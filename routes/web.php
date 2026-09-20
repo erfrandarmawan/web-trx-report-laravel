@@ -32,7 +32,6 @@ Route::middleware('auth')->group(function () {
 
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    Route::get('transactions/export', [TransactionController::class, 'export'])->name('transactions.export');
     Route::resource('transactions', TransactionController::class);
 
     Route::get('profile', [ProfileController::class, 'edit'])->name('profile.edit');
