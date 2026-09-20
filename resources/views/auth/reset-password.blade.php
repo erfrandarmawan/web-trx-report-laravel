@@ -7,8 +7,8 @@
 
         <div>
             <label for="email" class="block text-sm font-medium mb-1">Email</label>
-            <input type="email" name="email" id="email" value="{{ old('email') }}" required autofocus
-                class="w-full px-3 py-2 border rounded-sm dark:bg-[#1b1b18] dark:border-[#3E3E3A] dark:text-[#EDEDEC]">
+            <input type="email" name="email" id="email" value="{{ old('email', request()->query('email')) }}" required readonly
+                class="w-full px-3 py-2 border rounded-sm bg-gray-100 dark:bg-[#1b1b18] dark:border-[#3E3E3A] dark:text-[#EDEDEC] cursor-not-allowed">
             @error('email')
                 <p class="text-sm text-red-500 mt-1">{{ $message }}</p>
             @enderror
@@ -16,7 +16,7 @@
 
         <div>
             <label for="password" class="block text-sm font-medium mb-1">Password</label>
-            <input type="password" name="password" id="password" required
+            <input type="password" name="password" id="password" required autofocus
                 class="w-full px-3 py-2 border rounded-sm dark:bg-[#1b1b18] dark:border-[#3E3E3A] dark:text-[#EDEDEC]">
             @error('password')
                 <p class="text-sm text-red-500 mt-1">{{ $message }}</p>
