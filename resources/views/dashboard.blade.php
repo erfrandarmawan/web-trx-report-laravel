@@ -43,13 +43,17 @@
             <div class="min-w-[640px]">
                 <div class="flex items-end gap-1 h-48">
                     @foreach ($chartValues as $index => $value)
-                        <div class="flex-1 flex flex-col items-center justify-end h-full group">
+                        <div class="chart-bar flex-1 flex flex-col items-center justify-end h-full group cursor-pointer"
+                            data-date="{{ $chartDates[$index] }}"
+                            data-amount="{{ $value }}"
+                            data-count="{{ $chartCounts[$index] }}"
+                            role="button" tabindex="0"
+                            aria-label="{{ $chartDates[$index] }}: Rp{{ number_format($value, 2, ',', '.') }}, {{ $chartCounts[$index] }} transactions">
                             <span class="text-[10px] text-[#706f6c] dark:text-[#A1A09A] mb-1 opacity-0 group-hover:opacity-100 transition">
                                 {{ number_format($value, 0, ',', '.') }}
                             </span>
-                            <div class="w-full rounded-t-sm bg-[#f53003] dark:bg-[#FF4433] min-h-[2px]"
-                                style="height: {{ ($value / $maxValue) * 100 }}%"
-                                title="{{ $chartLabels[$index] }}: Rp{{ number_format($value, 2, ',', '.') }}"></div>
+                            <div class="w-full rounded-t-sm bg-[#f53003] dark:bg-[#FF4433] min-h-[2px] group-hover:bg-[#c62802] dark:group-hover:bg-[#e63524] transition-colors"
+                                style="height: {{ ($value / $maxValue) * 100 }}%"></div>
                         </div>
                     @endforeach
                 </div>
@@ -61,4 +65,81 @@
             </div>
         </div>
     </div>
+
+    <div id="chart-tooltip"
+        class="fixed z-50 hidden pointer-events-none rounded-md bg-[#1b1b18] dark:bg-[#eeeeec] text-white dark:text-[#1C1C1A] px-3 py-2 text-xs shadow-lg">
+        <p class="font-medium mb-1" data-tooltip-date></p>
+        <p data-tooltip-amount></p>
+        <p data-tooltip-count></p>
+    </div>
+
+    <script>
+        const tooltip = document.getElementById('chart-tooltip');
+        const tooltipDate = tooltip.querySelector('[data-tooltip-date]');
+        const tooltipAmount = tooltip.querySelector('[data-tooltip-amount]');
+        const tooltipCount = tooltip.querySelector('[data-tooltip-count]');
+        const formatRupiah = (value) => 'Rp' + Number(value).toLocaleString('id-ID', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        });
+        let activeBar = null;
+
+        function showTooltip(bar) {
+            const rect = bar.getBoundingClientRect();
+
+            tooltipDate.textContent = bar.dataset.date;
+            tooltipAmount.textContent = 'Total: ' + formatRupiah(bar.dataset.amount);
+            tooltipCount.textContent = 'Transactions: ' + bar.dataset.count;
+
+            tooltip.classList.remove('hidden');
+            tooltip.style.visibility = 'hidden';
+
+            const tipRect = tooltip.getBoundingClientRect();
+            let left = rect.left + rect.width / 2 - tipRect.width / 2;
+            left = Math.max(8, Math.min(left, window.innerWidth - tipRect.width - 8));
+
+            let top = rect.top - tipRect.height - 8;
+
+            if (top < 8) {
+                top = rect.bottom + 8;
+            }
+
+            tooltip.style.left = left + 'px';
+            tooltip.style.top = top + 'px';
+            tooltip.style.visibility = 'visible';
+        }
+
+        function hideTooltip() {
+            activeBar = null;
+            tooltip.classList.add('hidden');
+        }
+
+        document.querySelectorAll('.chart-bar').forEach((bar) => {
+            bar.addEventListener('click', () => {
+                if (activeBar === bar) {
+                    hideTooltip();
+                    return;
+                }
+
+                activeBar = bar;
+                showTooltip(bar);
+            });
+
+            bar.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    bar.click();
+                }
+            });
+        });
+
+        document.addEventListener('click', (event) => {
+            if (! event.target.closest('.chart-bar')) {
+                hideTooltip();
+            }
+        });
+
+        window.addEventListener('scroll', hideTooltip, true);
+        window.addEventListener('resize', hideTooltip);
+    </script>
 </x-layouts.app>

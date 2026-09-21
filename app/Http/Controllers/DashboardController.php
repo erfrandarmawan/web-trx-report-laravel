@@ -49,15 +49,27 @@ class DashboardController extends Controller
             ->orderBy('date')
             ->pluck('total', 'date');
 
+        $dailyCounts = $query()
+            ->selectRaw("DATE(CONVERT_TZ(trx_date, '+00:00', ?)) as date, COUNT(*) as count", [$offset])
+            ->groupBy('date')
+            ->orderBy('date')
+            ->pluck('count', 'date');
+
         $chartLabels = [];
         $chartValues = [];
+        $chartCounts = [];
+        $chartDates = [];
 
         $localStart = $startDate->copy()->setTimezone($timezone)->startOfDay();
         $localEnd = $endDate->copy()->setTimezone($timezone)->startOfDay();
 
         foreach (CarbonPeriod::create($localStart, $localEnd) as $date) {
+            $key = $date->format('Y-m-d');
+
             $chartLabels[] = $date->format('d M');
-            $chartValues[] = (float) ($dailyTotals[$date->format('Y-m-d')] ?? 0);
+            $chartValues[] = (float) ($dailyTotals[$key] ?? 0);
+            $chartCounts[] = (int) ($dailyCounts[$key] ?? 0);
+            $chartDates[] = $date->format('d M Y');
         }
 
         return view('dashboard', [
@@ -68,6 +80,8 @@ class DashboardController extends Controller
             'averageAmount' => $averageAmount,
             'chartLabels' => $chartLabels,
             'chartValues' => $chartValues,
+            'chartCounts' => $chartCounts,
+            'chartDates' => $chartDates,
         ]);
     }
 
