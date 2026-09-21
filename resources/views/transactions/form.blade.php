@@ -1,5 +1,5 @@
 <x-layouts.app :title="($transaction ? 'Edit' : 'Create').' Transaction'">
-    <h1 class="text-2xl font-medium mb-6">{{ $transaction ? 'Edit Transaction' : 'Create Transaction' }}</h1>
+    <h1 class="text-2xl font-medium mb-6 text-center">{{ $transaction ? 'Edit Transaction' : 'Create Transaction' }}</h1>
 
     <div class="bg-white dark:bg-[#161615] rounded-lg shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d] p-6 max-w-md">
         <form method="POST"
