@@ -63,9 +63,11 @@
             </tbody>
         </table>
 
-        <div class="px-6 py-4">
-            {{ $transactions->links() }}
-        </div>
+        @if ($transactions->hasPages())
+            <div class="px-6 py-4 border-t border-[#e3e3e0] dark:border-[#3E3E3A]">
+                {{ $transactions->withQueryString()->links() }}
+            </div>
+        @endif
     </div>
 
     <script>
