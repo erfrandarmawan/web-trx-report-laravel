@@ -11,7 +11,7 @@
             @endif
 
             <div>
-                <label for="amount" class="block text-sm font-medium mb-1">Amount</label>
+                <label for="amount" class="block text-sm font-medium mb-1">Amount (Max 2 decimal digit)</label>
                 <input type="number" name="amount" id="amount" step="0.01" min="0" value="{{ old('amount', $transaction?->amount) }}" required
                     class="w-full px-3 py-2 border rounded-sm dark:bg-[#1b1b18] dark:border-[#3E3E3A] dark:text-[#EDEDEC]">
                 @error('amount')
@@ -21,7 +21,8 @@
 
             <div>
                 <label for="trx_date" class="block text-sm font-medium mb-1">Transaction Date</label>
-                <input type="datetime-local" name="trx_date" id="trx_date" value="{{ old('trx_date', $transaction?->trx_date?->format('Y-m-d\TH:i')) }}" required
+                <input type="datetime-local" name="trx_date" id="trx_date" value="{{ old('trx_date', $transaction?->trx_date?->format('Y-m-d\TH:i') ?? now(config('app.local_timezone'))->format('Y-m-d\TH:i')) }}" required
+                    onclick="this.showPicker()"
                     class="w-full px-3 py-2 border rounded-sm dark:bg-[#1b1b18] dark:border-[#3E3E3A] dark:text-[#EDEDEC]">
                 @error('trx_date')
                     <p class="text-sm text-red-500 mt-1">{{ $message }}</p>
