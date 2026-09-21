@@ -24,6 +24,7 @@ class DashboardController extends Controller
     public function index(Request $request): View
     {
         $userId = Auth::id();
+        $timezone = $this->localTimezone();
 
         $range = $request->query('range', 'month');
 
@@ -31,7 +32,7 @@ class DashboardController extends Controller
             $range = 'month';
         }
 
-        [$startDate, $endDate] = $this->resolveRange($range);
+        [$startDate, $endDate] = $this->resolveRange($range, $timezone);
 
         $query = fn () => Transaction::where('user_id', $userId)
             ->whereBetween('trx_date', [$startDate, $endDate]);
@@ -40,8 +41,10 @@ class DashboardController extends Controller
         $totalRevenue = $query()->sum('amount');
         $averageAmount = $query()->avg('amount');
 
+        $offset = now($timezone)->format('P');
+
         $dailyTotals = $query()
-            ->selectRaw('DATE(trx_date) as date, SUM(amount) as total')
+            ->selectRaw("DATE(CONVERT_TZ(trx_date, '+00:00', ?)) as date, SUM(amount) as total", [$offset])
             ->groupBy('date')
             ->orderBy('date')
             ->pluck('total', 'date');
@@ -49,7 +52,10 @@ class DashboardController extends Controller
         $chartLabels = [];
         $chartValues = [];
 
-        foreach (CarbonPeriod::create($startDate->copy()->startOfDay(), $endDate->copy()->startOfDay()) as $date) {
+        $localStart = $startDate->copy()->setTimezone($timezone)->startOfDay();
+        $localEnd = $endDate->copy()->setTimezone($timezone)->startOfDay();
+
+        foreach (CarbonPeriod::create($localStart, $localEnd) as $date) {
             $chartLabels[] = $date->format('d M');
             $chartValues[] = (float) ($dailyTotals[$date->format('Y-m-d')] ?? 0);
         }
@@ -68,17 +74,24 @@ class DashboardController extends Controller
     /**
      * @return array{0: Carbon, 1: Carbon}
      */
-    private function resolveRange(string $range): array
+    private function resolveRange(string $range, string $timezone): array
     {
-        $endDate = now();
+        $now = now($timezone);
+
+        $endDate = $now->copy();
 
         $startDate = match ($range) {
-            'today' => now()->startOfDay(),
-            '7days' => now()->subDays(6)->startOfDay(),
-            '30days' => now()->subDays(29)->startOfDay(),
-            default => now()->startOfMonth(),
+            'today' => $now->copy()->startOfDay(),
+            '7days' => $now->copy()->subDays(6)->startOfDay(),
+            '30days' => $now->copy()->subDays(29)->startOfDay(),
+            default => $now->copy()->startOfMonth(),
         };
 
-        return [$startDate, $endDate];
+        return [$startDate->utc(), $endDate->utc()];
+    }
+
+    private function localTimezone(): string
+    {
+        return config('app.local_timezone', 'Asia/Jakarta');
     }
 }

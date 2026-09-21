@@ -69,6 +69,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Application Display Timezone
+    |--------------------------------------------------------------------------
+    |
+    | Timestamps are stored in the database as UTC, but the website should
+    | display them in the local timezone of its users. This timezone is used
+    | to translate day boundaries and grouped dates for display.
+    |
+    */
+
+    'local_timezone' => env('APP_LOCAL_TIMEZONE', 'Asia/Jakarta'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Locale Configuration
     |--------------------------------------------------------------------------
     |

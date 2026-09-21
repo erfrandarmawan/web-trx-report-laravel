@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Database\Factories\TransactionFactory;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -23,8 +25,23 @@ class Transaction extends Model
     {
         return [
             'amount' => 'decimal:2',
-            'trx_date' => 'datetime',
         ];
+    }
+
+    /**
+     * @return Attribute<Carbon, Carbon>
+     */
+    protected function trxDate(): Attribute
+    {
+        return Attribute::make(
+            get: fn ($value): Carbon => Carbon::parse($value)->setTimezone($this->localTimezone()),
+            set: fn ($value): Carbon => Carbon::parse($value, $this->localTimezone())->utc(),
+        );
+    }
+
+    private function localTimezone(): string
+    {
+        return config('app.local_timezone', 'Asia/Jakarta');
     }
 
     public function user(): BelongsTo
