@@ -1,4 +1,5 @@
 # Transaction Report
+Product Requirements Document : https://docs.google.com/document/d/1S9V0-DeJnBfNGcZvXV_PxxwMwC8CmYU7p3TPdYaPkHw/edit?usp=sharing
 
 Aplikasi web untuk **mencatat dan melaporkan transaksi** per usaha (multi-user). Setiap pengguna hanya dapat melihat dan mengelola data transaksinya sendiri, lengkap dengan dashboard ringkasan, grafik pendapatan harian, filter rentang tanggal, dan manajemen profil.
 
