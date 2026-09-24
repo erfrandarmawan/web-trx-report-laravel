@@ -135,7 +135,7 @@ Test menggunakan database SQLite in-memory (lihat `phpunit.xml`), jadi tidak men
 
 ---
 
-## 🗂️ Struktur Proyek Singkat
+## 🗂️ Struktur Proyek
 
 ```
 app/
@@ -165,7 +165,7 @@ resources/views/
 
 ---
 
-## 🧭 Ringkasan Rute
+## 🧭 Routing
 
 | Method | URI | Keterangan |
 | --- | --- | --- |
@@ -188,7 +188,7 @@ php artisan route:list --except-vendor
 
 ---
 
-## 🛠️ Perintah Berguna
+## 🛠️ Command List
 
 ```bash
 php artisan migrate:fresh --seed   # Reset database + data demo
@@ -197,6 +197,19 @@ vendor/bin/pint --dirty            # Rapikan format kode PHP
 php artisan pail                   # Lihat log aplikasi secara real-time
 npm run build                      # Build aset untuk produksi
 ```
+
+---
+
+## 💖 Dukungan & Kontak
+
+Kamu dapat mendukung saya di https://saweria.co/erfrandarmawan
+
+Collab via erfrandarmawan@develobe.id
+
+Social Media Channel :
+- https://www.youtube.com/@develobe_id
+- https://tiktok.com/@erfrandarmawan
+- https://instagram.com/erfrandarmawan
 
 ---
 
